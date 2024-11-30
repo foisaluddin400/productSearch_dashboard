@@ -4,7 +4,7 @@ const Verify = () => {
   
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-black">
+    <div className="flex items-center justify-center min-h-screen ">
       verify
     </div>
   );

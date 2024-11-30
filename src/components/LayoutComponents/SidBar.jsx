@@ -90,15 +90,13 @@ const items = [
 
 const SidBar = () => {
   const [selectedKey, setSelectedKey] = useState("dashboard");
-  const [expandedKeys, setExpandedKeys] = useState([]); 
+  const [expandedKeys, setExpandedKeys] = useState([]);
   const location = useLocation();
-  const navigate = useNavigate(); 
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     const currentPath = location.pathname;
 
-  
     const parentItem = items.find(
       (item) =>
         item.link === currentPath ||
@@ -107,7 +105,6 @@ const SidBar = () => {
     );
 
     if (parentItem) {
-
       setSelectedKey(
         parentItem.children
           ? parentItem.children.find((child) => child.link === currentPath)
@@ -119,8 +116,7 @@ const SidBar = () => {
         setExpandedKeys([...expandedKeys, parentItem.key]);
       }
     }
-  }, [location, expandedKeys]);
-
+  }, [location]);
 
   const onParentClick = (key) => {
     setExpandedKeys((prev) =>
@@ -132,8 +128,8 @@ const SidBar = () => {
 
   // Logout Function
   const handleLogout = () => {
-    localStorage.removeItem("token"); 
-    navigate("/login"); 
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   return (
@@ -147,7 +143,6 @@ const SidBar = () => {
       <div className="menu-items">
         {items.map((item) => (
           <div key={item.key}>
-            {/* Render Parent Item */}
             <Link
               to={item.link}
               className={`menu-item my-4 mx-5 py-3 px-3 flex items-center cursor-pointer ${
@@ -157,17 +152,17 @@ const SidBar = () => {
               }`}
               onClick={(e) => {
                 if (item.children) {
-                  e.preventDefault(); 
-                  onParentClick(item.key); 
+                  e.preventDefault(); // Prevent navigation if it has children
+                  onParentClick(item.key); // Toggle expanded state
                 } else {
-                  setSelectedKey(item.key); 
+                  setSelectedKey(item.key); // Set the selected key for normal links
                 }
               }}
             >
               <img src={item.icon} alt={item.label} className="w-5 h-5 mr-3" />
               <span className="block w-full text-black">{item.label}</span>
 
-              
+              {/* Show dropdown arrow if children exist */}
               {item.children && (
                 <FaChevronRight
                   className={`ml-auto transform transition-all duration-300 ${
@@ -177,7 +172,7 @@ const SidBar = () => {
               )}
             </Link>
 
-           
+            {/* Show children menu if expanded */}
             {item.children && expandedKeys.includes(item.key) && (
               <div className="overflow-hidden bg-white -my-2 mx-5 mb-4 text-black transition-all duration-300">
                 {item.children.map((child) => (
@@ -190,13 +185,11 @@ const SidBar = () => {
                         : "hover:bg-gray-200"
                     }`}
                     onClick={() => {
-                      setSelectedKey(child.key); 
-                      setExpandedKeys([]); 
+                      setSelectedKey(child.key); // Set the selected key for children
+                      setExpandedKeys([]); // Close all expanded items
                     }}
                   >
-                    <span className="block w-full text-black">
-                      {child.label}
-                    </span>
+                    <span className="block w-full text-black">{child.label}</span>
                   </Link>
                 ))}
               </div>
@@ -205,13 +198,15 @@ const SidBar = () => {
         ))}
       </div>
 
-      {/* Footer (Log Out) */}
+      {/* Logout Button */}
       <div className="custom-sidebar-footer absolute bottom-0 w-full p-4">
         <button
-          onClick={handleLogout} 
+          onClick={handleLogout}
           className="w-full flex bg-white text-start rounded-md text-black p-3"
         >
-          <span className="text-2xl"><IoIosLogIn /></span>
+          <span className="text-2xl">
+            <IoIosLogIn />
+          </span>
           <span className="ml-3">Log Out</span>
         </button>
       </div>
