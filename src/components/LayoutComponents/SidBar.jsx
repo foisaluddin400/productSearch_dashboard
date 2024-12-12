@@ -6,8 +6,8 @@ import subscription from "../../assets/routerImg/subscription.png";
 import user from "../../assets/routerImg/user.png";
 import logo from "../../assets/header/logo.png";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { FaChevronRight } from "react-icons/fa"; 
+import { useEffect, useRef, useState } from "react";
+import { FaChevronRight } from "react-icons/fa";
 import { IoIosLogIn } from "react-icons/io";
 
 const items = [
@@ -93,6 +93,7 @@ const SidBar = () => {
   const [expandedKeys, setExpandedKeys] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
+  const contentRef = useRef({});
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -120,9 +121,7 @@ const SidBar = () => {
 
   const onParentClick = (key) => {
     setExpandedKeys((prev) =>
-      prev.includes(key)
-        ? prev.filter((item) => item !== key)
-        : [...prev, key]
+      prev.includes(key) ? prev.filter((item) => item !== key) : [...prev, key]
     );
   };
 
@@ -172,9 +171,21 @@ const SidBar = () => {
               )}
             </Link>
 
+            {/* overflow-hidden bg-white -my-2 mx-5 mb-4 text-black transition-all duration-300 */}
+
             {/* Show children menu if expanded */}
-            {item.children && expandedKeys.includes(item.key) && (
-              <div className="overflow-hidden bg-white -my-2 mx-5 mb-4 text-black transition-all duration-300">
+            {item.children && (
+              <div
+                className={`children-menu bg-white -my-2 mx-5 mb-4 text-black transition-all duration-300 ${
+                  expandedKeys.includes(item.key) ? "expanded" : ""
+                }`}
+                style={{
+                  maxHeight: expandedKeys.includes(item.key)
+                    ? `${contentRef.current[item.key]?.scrollHeight}px`
+                    : "0",
+                }}
+                ref={(el) => (contentRef.current[item.key] = el)}
+              >
                 {item.children.map((child) => (
                   <Link
                     key={child.key}
@@ -189,7 +200,9 @@ const SidBar = () => {
                       setExpandedKeys([]); // Close all expanded items
                     }}
                   >
-                    <span className="block w-full text-black">{child.label}</span>
+                    <span className="block w-full text-black">
+                      {child.label}
+                    </span>
                   </Link>
                 ))}
               </div>
