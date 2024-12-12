@@ -171,12 +171,10 @@ const SidBar = () => {
               )}
             </Link>
 
-            {/* overflow-hidden bg-white -my-2 mx-5 mb-4 text-black transition-all duration-300 */}
-
             {/* Show children menu if expanded */}
             {item.children && (
               <div
-                className={`children-menu bg-white -my-2 mx-5 mb-4 text-black transition-all duration-300 ${
+                className={`children-menu bg-white -my-2 mx-5  text-black transition-all duration-300 ${
                   expandedKeys.includes(item.key) ? "expanded" : ""
                 }`}
                 style={{

@@ -162,22 +162,22 @@ const Header = () => {
                 </div>
 
                 <div className="menu-items">
-                  {items.map((item) => (
+                {items.map((item) => (
                     <div key={item.key}>
                       <Link
                         to={item.link}
-                        className={`menu-item my-4 mx-5  py-3 px-3 flex items-center cursor-pointer ${
+                        className={`menu-item my-4 mx-5 py-3 px-3 flex items-center cursor-pointer ${
                           selectedKey === item.key
                             ? "bg-[#EDC4C5] rounded-md"
                             : "bg-white rounded-md hover:bg-gray-200"
                         }`}
-                        onClick={() => {
+                        onClick={(e) => {
                           if (item.children) {
-                            onParentClick(item.key); // Expand/Collapse children
+                            e.preventDefault(); // Prevent navigation if it has children
+                            onParentClick(item.key); // Toggle expanded state
                           } else {
-                            onClose(); // Close the drawer if it's a direct navigation
+                            setSelectedKey(item.key); // Set the selected key for normal links
                           }
-                          onClick(item.key); // Mark the item as selected
                         }}
                       >
                         <img
@@ -189,6 +189,7 @@ const Header = () => {
                           {item.label}
                         </span>
 
+                        {/* Show dropdown arrow if children exist */}
                         {item.children && (
                           <FaChevronRight
                             className={`ml-auto transform transition-all duration-300 ${
