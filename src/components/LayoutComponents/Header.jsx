@@ -190,7 +190,7 @@ const Header = () => {
                           {item.label}
                         </span>
 
-                        {/* Show dropdown arrow if child*/}
+                        {/* Show dropdown arrow if */}
                         {item.children && (
                           <FaChevronRight
                             className={`ml-auto transform transition-all duration-300 ${
