@@ -240,7 +240,7 @@ const Header = () => {
                   ))}
                 </div>
 
-                {/* Footer (Log Ou) */}
+                {/* Footer  */}
                 <div className="custom-sidebar-footer absolute bottom-0 w-full p-4 ">
                   <button
                     onClick={handleLogout}
