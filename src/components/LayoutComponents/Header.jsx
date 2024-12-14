@@ -190,7 +190,7 @@ const Header = () => {
                           {item.label}
                         </span>
 
-                        {/* Show dropd   */}
+                        {/* Show    */}
                         {item.children && (
                           <FaChevronRight
                             className={`ml-auto transform transition-all duration-300 ${
