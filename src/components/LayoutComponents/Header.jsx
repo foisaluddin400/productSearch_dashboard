@@ -190,7 +190,7 @@ const Header = () => {
                           {item.label}
                         </span>
 
-                        {/*    */}
+                        
                         {item.children && (
                           <FaChevronRight
                             className={`ml-auto transform transition-all duration-300 ${
@@ -240,7 +240,7 @@ const Header = () => {
                   ))}
                 </div>
 
-                {/* Footer (Log Out) */}
+                {/* Footer (Log Ou) */}
                 <div className="custom-sidebar-footer absolute bottom-0 w-full p-4 ">
                   <button
                     onClick={handleLogout}
