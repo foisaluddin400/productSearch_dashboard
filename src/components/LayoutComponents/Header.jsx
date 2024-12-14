@@ -173,10 +173,11 @@ const Header = () => {
                         }`}
                         onClick={(e) => {
                           if (item.children) {
-                            e.preventDefault(); // Prevent navigation if it has children
-                            onParentClick(item.key); // Toggle expanded state
+                            e.preventDefault(); 
+                            onParentClick(item.key); 
                           } else {
-                            setSelectedKey(item.key); // Set the selected key for normal links
+                            setSelectedKey(item.key);
+                            onClose(); 
                           }
                         }}
                       >
