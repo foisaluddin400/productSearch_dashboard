@@ -240,7 +240,7 @@ const Header = () => {
                   ))}
                 </div>
 
-                {/* Foot*/}
+                {/* Foo*/}
                 <div className="custom-sidebar-footer absolute bottom-0 w-full p-4 ">
                   <button
                     onClick={handleLogout}
