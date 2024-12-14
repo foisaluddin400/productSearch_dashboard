@@ -224,7 +224,7 @@ const Header = () => {
                                   : "hover:bg-gray-200"
                               }`}
                               onClick={() => {
-                                setSelectedKey(child.key); // Set the 
+                                setSelectedKey(child.key); 
                                 setExpandedKeys([]); // Collapse all expanded items
                                 onClose(); // Close the drawer after navigation
                               }}
