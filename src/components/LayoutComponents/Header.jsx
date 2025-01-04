@@ -226,7 +226,7 @@ const Header = () => {
                               onClick={() => {
                                 setSelectedKey(child.key); 
                                 setExpandedKeys([]); // Collapse all expanded items
-                                onClose(); // Close the drawer after navigation
+                                onClose(); // Close the drawer navigation
                               }}
                             >
                               <span className="block w-full text-black">
