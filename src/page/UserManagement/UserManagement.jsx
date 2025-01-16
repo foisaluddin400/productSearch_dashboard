@@ -1,10 +1,4 @@
 
-
-
-
-
-
-
 const UserManagement = () => {
     
     return (

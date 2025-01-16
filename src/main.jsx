@@ -9,19 +9,16 @@ import {
 } from "react-router-dom";
 import { router } from './routes/Router';
 
-import {
-  QueryClient,
-  QueryClientProvider,
+import { Provider } from 'react-redux';
+import { store } from './page/redux/store';
 
-} from '@tanstack/react-query'
 
-const queryClient = new QueryClient()
 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>   
+    <Provider store={store}> 
         <RouterProvider router={router} />
-    </QueryClientProvider>
+    </Provider>
   </StrictMode>,
 )
