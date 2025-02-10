@@ -19,3 +19,4 @@ export const baseApi = createApi({
 });
 
 export const imageUrl = "http://10.0.60.37:6050";
+// asdfsf
