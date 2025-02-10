@@ -1,36 +1,48 @@
-import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
-import { Skeleton } from "antd";
-import { useGetAllAdminQuery } from "../redux/Api/adminApi";
+// import React, { useEffect } from "react";
+// import { Navigate, useLocation, useNavigate } from "react-router-dom";
+// import { Skeleton } from "antd";
+
+// import { useGetSuperAdminQuery } from "../page/redux/api/userApi";
+
+import { useSelector } from 'react-redux';
+import { Navigate, useLocation } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
-  const location = useLocation();
-  const accessToken = localStorage.getItem("accessToken"); // Check accessToken from storage
+  // const location = useLocation();
+  // const navigate = useNavigate(); // Added useNavigate
+  // const accessToken = localStorage.getItem("accessToken");
 
-  if (!accessToken) {
-    return <Navigate to={"/auth/login"} state={{ from: location }} />;
+  // if (!accessToken) {
+  //   return <Navigate to={"/login"} state={{ from: location }} replace />;
+  // }
+
+  // const { data: getUserInfo, isError, isLoading, isSuccess } = useGetSuperAdminQuery(undefined, {
+  //   refetchOnMountOrArgChange: true,
+  // });
+
+  // useEffect(() => {
+  //   if (isError || (!isLoading && !isSuccess) || !getUserInfo?.data || !["admin", "super_admin"].includes(getUserInfo.data.role)) {
+  //     navigate("/login", { state: { from: location }, replace: true });
+  //   }
+  // }, [isError, isLoading, isSuccess, getUserInfo, navigate, location]);
+
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex items-center justify-center h-screen">
+  //       <Skeleton active />
+  //     </div>
+  //   );
+  // }
+
+  // return children;
+  
+  const {token} = useSelector((state) => state.logInUser)
+  console.log(token)
+  const { pathname } = useLocation();
+
+  if (!token) {
+      return <Navigate to="/login" state={{ path: pathname }}></Navigate>;
   }
-
-  const { data: getUserInfo, isError, isLoading, isFetching } = useGetAllAdminQuery();
-
-  if (isLoading || isFetching) {
-    return (
-      <div className="flex items-center justify-center">
-        <Skeleton active />
-      </div>
-    );
-  }
-
-  if (isError || !getUserInfo?.data?.length) {
-    return <Navigate to={"/auth/login"} state={{ from: location }} />;
-  }
-
-  const admin = getUserInfo.data.find((user) => user.auth.role === "ADMIN");
-
-  if (!admin || !admin.auth.email) {
-    return <Navigate to={"/auth/login"} state={{ from: location }} />;
-  }
-
   return children;
 };
 

@@ -9,6 +9,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa";
 import { IoIosLogIn } from "react-icons/io";
+import { logout } from "../../page/redux/features/auth/authSlice";
+import { useDispatch } from "react-redux";
 
 const items = [
   {
@@ -94,6 +96,7 @@ const SidBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const contentRef = useRef({});
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -127,9 +130,10 @@ const SidBar = () => {
 
   // Logout Function
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    dispatch(logout())
     navigate("/login");
   };
+
 
   return (
     <div className="custom-sidebar h-full bg-[#050505]">
