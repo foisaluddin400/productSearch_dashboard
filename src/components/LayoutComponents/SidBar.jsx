@@ -136,7 +136,7 @@ const SidBar = () => {
 
 
   return (
-    <div className="custom-sidebar h-full bg-[#050505]">
+    <div className="custom-sidebar h-full bg-[#120c66]">
       {/* Logo */}
       <div className="custom-sidebar-logo flex justify-center">
         <img src={logo} alt="Logo" className="w-[160px]" />
@@ -150,7 +150,7 @@ const SidBar = () => {
               to={item.link}
               className={`menu-item my-4 mx-5 py-3 px-3 flex items-center cursor-pointer ${
                 selectedKey === item.key
-                  ? "bg-[#EDC4C5] rounded-md"
+                  ? "bg-[#bb3538] text-white rounded-md"
                   : "bg-white rounded-md hover:bg-gray-200"
               }`}
               onClick={(e) => {
@@ -163,7 +163,7 @@ const SidBar = () => {
               }}
             >
               <img src={item.icon} alt={item.label} className="w-5 h-5 mr-3" />
-              <span className="block w-full text-black">{item.label}</span>
+              <span className="block w-full ">{item.label}</span>
 
               {/* Show dropdown arrow if children exist */}
               {item.children && (
@@ -178,7 +178,7 @@ const SidBar = () => {
             {/* Show children menu if expanded */}
             {item.children && (
               <div
-                className={`children-menu bg-white -my-2 mx-5  text-black transition-all duration-300 ${
+                className={`children-menu bg-white -my-2 mx-5   transition-all duration-300 ${
                   expandedKeys.includes(item.key) ? "expanded" : ""
                 }`}
                 style={{
@@ -194,7 +194,7 @@ const SidBar = () => {
                     to={child.link}
                     className={`menu-item p-4 flex items-center cursor-pointer ${
                       selectedKey === child.key
-                        ? "bg-[#EDC4C5]"
+                        ? "bg-[#bb3538] text-white"
                         : "hover:bg-gray-200"
                     }`}
                     onClick={() => {
@@ -202,7 +202,7 @@ const SidBar = () => {
                       setExpandedKeys([]); // Close all expanded items
                     }}
                   >
-                    <span className="block w-full text-black">
+                    <span className="block w-full ">
                       {child.label}
                     </span>
                   </Link>
