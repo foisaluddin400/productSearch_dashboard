@@ -25,12 +25,7 @@ const items = [
     icon: user,
     link: "/dashboard/UserManagement",
   },
-  {
-    key: "creatorManagement",
-    label: "Creator Management",
-    icon: create,
-    link: "/dashboard/CreatorManagement",
-  },
+  
   {
     key: "categoriesManagement",
     label: "Categories Management",
@@ -38,7 +33,7 @@ const items = [
     link: "/dashboard/CategoriesManagement/Categories",
     children: [
       {
-        key: "categoriesManagement",
+        key: "categories",
         label: "Categories",
         link: "/dashboard/CategoriesManagement/Categories",
       },
@@ -56,7 +51,7 @@ const items = [
     link: "/dashboard/Subscription",
   },
   {
-    key: "profile",
+    key: "settings",
     label: "Settings",
     icon: settings,
     link: "/dashboard/Settings/profile",
@@ -101,23 +96,29 @@ const SidBar = () => {
   useEffect(() => {
     const currentPath = location.pathname;
 
-    const parentItem = items.find(
-      (item) =>
-        item.link === currentPath ||
-        (item.children &&
-          item.children.some((child) => child.link === currentPath))
-    );
+    let activeParent = null;
 
-    if (parentItem) {
+    items.forEach((item) => {
+      if (item.link === currentPath) {
+        activeParent = item;
+      } else if (
+        item.children &&
+        item.children.some((child) => child.link === currentPath)
+      ) {
+        activeParent = item;
+      }
+    });
+
+    if (activeParent) {
       setSelectedKey(
-        parentItem.children
-          ? parentItem.children.find((child) => child.link === currentPath)
-              ?.key || parentItem.key
-          : parentItem.key
+        activeParent.children
+          ? activeParent.children.find((child) => child.link === currentPath)
+              ?.key || activeParent.key
+          : activeParent.key
       );
 
-      if (parentItem.children && !expandedKeys.includes(parentItem.key)) {
-        setExpandedKeys([...expandedKeys, parentItem.key]);
+      if (activeParent.children && !expandedKeys.includes(activeParent.key)) {
+        setExpandedKeys([...expandedKeys, activeParent.key]);
       }
     }
   }, [location]);
@@ -130,10 +131,9 @@ const SidBar = () => {
 
   // Logout Function
   const handleLogout = () => {
-    dispatch(logout())
+    dispatch(logout());
     navigate("/login");
   };
-
 
   return (
     <div className="custom-sidebar h-full bg-[#120c66]">
@@ -144,80 +144,92 @@ const SidBar = () => {
 
       {/* Sidebar Menu */}
       <div className="menu-items">
-        {items.map((item) => (
-          <div key={item.key}>
-            <Link
-              to={item.link}
-              className={`menu-item my-4 mx-5 py-3 px-3 flex items-center cursor-pointer ${
-                selectedKey === item.key
-                  ? "bg-[#bb3538] text-white rounded-md"
-                  : "bg-white rounded-md hover:bg-gray-200"
-              }`}
-              onClick={(e) => {
-                if (item.children) {
-                  e.preventDefault(); // Prevent navigation if it has children
-                  onParentClick(item.key); // Toggle expanded state
-                } else {
-                  setSelectedKey(item.key); // Set the selected key for normal links
-                }
-              }}
-            >
-              <img src={item.icon} alt={item.label} className="w-5 h-5 mr-3" />
-              <span className="block w-full ">{item.label}</span>
+        {items.map((item) => {
+          const isSettingsActive =
+            item.key === "settings" &&
+            item.children.some((child) => child.link === location.pathname);
 
-              {/* Show dropdown arrow if children exist */}
-              {item.children && (
-                <FaChevronRight
-                  className={`ml-auto transform transition-all duration-300 ${
-                    expandedKeys.includes(item.key) ? "rotate-90" : ""
-                  }`}
-                />
-              )}
-            </Link>
+          const isCreatorActive =
+            item.key === "creatorManagement" &&
+            item.children.some((child) => child.link === location.pathname);
 
-            {/* Show children menu if expanded */}
-            {item.children && (
-              <div
-                className={`children-menu bg-white -my-2 mx-5   transition-all duration-300 ${
-                  expandedKeys.includes(item.key) ? "expanded" : ""
+          const isCategoriesActive =
+            item.key === "categoriesManagement" &&
+            item.children.some((child) => child.link === location.pathname);
+
+          return (
+            <div key={item.key}>
+              <Link
+                to={item.link}
+                className={`menu-item my-4 mx-5 py-3 px-3 flex items-center cursor-pointer ${
+                  selectedKey === item.key || isSettingsActive || isCreatorActive || isCategoriesActive
+                    ? "bg-[#bb3538] text-white rounded-md"
+                    : "bg-white rounded-md hover:bg-gray-200"
                 }`}
-                style={{
-                  maxHeight: expandedKeys.includes(item.key)
-                    ? `${contentRef.current[item.key]?.scrollHeight}px`
-                    : "0",
+                onClick={(e) => {
+                  if (item.children) {
+                    e.preventDefault(); // Prevent navigation if it has children
+                    onParentClick(item.key); // Toggle expanded state
+                  } else {
+                    setSelectedKey(item.key); // Set the selected key for normal links
+                  }
                 }}
-                ref={(el) => (contentRef.current[item.key] = el)}
               >
-                {item.children.map((child) => (
-                  <Link
-                    key={child.key}
-                    to={child.link}
-                    className={`menu-item p-4 flex items-center cursor-pointer ${
-                      selectedKey === child.key
-                        ? "bg-[#bb3538] text-white"
-                        : "hover:bg-gray-200"
+                <img src={item.icon} alt={item.label} className="w-5 h-5 mr-3" />
+                <span className="block w-full ">{item.label}</span>
+
+                {/* Show dropdown arrow if children exist */}
+                {item.children && (
+                  <FaChevronRight
+                    className={`ml-auto transform transition-all duration-300 ${
+                      expandedKeys.includes(item.key) ? "rotate-90" : ""
                     }`}
-                    onClick={() => {
-                      setSelectedKey(child.key); // Set the selected key for children
-                      setExpandedKeys([]); // Close all expanded items
-                    }}
-                  >
-                    <span className="block w-full ">
-                      {child.label}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+                  />
+                )}
+              </Link>
+
+              {/* Show children menu if expanded */}
+              {item.children && (
+                <div
+                  className={`children-menu bg-white -my-2 mx-5 transition-all duration-300 ${
+                    expandedKeys.includes(item.key) ? "expanded" : ""
+                  }`}
+                  style={{
+                    maxHeight: expandedKeys.includes(item.key)
+                      ? `${contentRef.current[item.key]?.scrollHeight}px`
+                      : "0",
+                  }}
+                  ref={(el) => (contentRef.current[item.key] = el)}
+                >
+                  {item.children.map((child) => (
+                    <Link
+                      key={child.key}
+                      to={child.link}
+                      className={`menu-item p-4 flex items-center cursor-pointer ${
+                        selectedKey === child.key
+                          ? "bg-[#bb3538] text-white"
+                          : "hover:bg-gray-200"
+                      }`}
+                      onClick={() => {
+                        setSelectedKey(child.key); // Set the selected key for children
+                        setExpandedKeys([]); // Close all expanded items
+                      }}
+                    >
+                      <span className="block w-full ">{child.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Logout Button */}
-      <div className="custom-sidebar-footer absolute bottom-0 w-full p-4">
+      <div className="  w-full p-4 px-5">
         <button
           onClick={handleLogout}
-          className="w-full flex bg-white text-start rounded-md text-black p-3"
+          className="w-full flex bg-[#fa16ef] text-white text-start rounded-md  p-3"
         >
           <span className="text-2xl">
             <IoIosLogIn />
