@@ -25,6 +25,8 @@ const items = [
     icon: user,
     link: "/dashboard/UserManagement",
   },
+
+  
   
   {
     key: "categoriesManagement",
@@ -136,13 +138,11 @@ const SidBar = () => {
   };
 
   return (
-    <div className="custom-sidebar h-full bg-[#120c66]">
-      {/* Logo */}
+    <div className="custom-sidebar h-[100vh] bg-[#120c66]">
+      
       <div className="custom-sidebar-logo flex justify-center">
         <img src={logo} alt="Logo" className="w-[160px]" />
       </div>
-
-      {/* Sidebar Menu */}
       <div className="menu-items">
         {items.map((item) => {
           const isSettingsActive =
@@ -168,10 +168,10 @@ const SidBar = () => {
                 }`}
                 onClick={(e) => {
                   if (item.children) {
-                    e.preventDefault(); // Prevent navigation if it has children
-                    onParentClick(item.key); // Toggle expanded state
+                    e.preventDefault(); 
+                    onParentClick(item.key); 
                   } else {
-                    setSelectedKey(item.key); // Set the selected key for normal links
+                    setSelectedKey(item.key);
                   }
                 }}
               >

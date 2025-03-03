@@ -9,6 +9,14 @@
   overflow: hidden;
   transition: max-height 0.3s ease-out;
 }
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
 
 
 
