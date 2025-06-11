@@ -2,15 +2,25 @@ import React from 'react'
 import { Modal, Table } from "antd";
 
 import { useState } from "react";
-import { MdBlockFlipped } from "react-icons/md";
-import { FaRegEye } from "react-icons/fa";
+import { MdBlockFlipped, MdDelete } from "react-icons/md";
+import { FaEdit, FaRegEye } from "react-icons/fa";
 import { AiOutlinePhone, AiOutlineMail } from "react-icons/ai";
 import { GoLocation } from "react-icons/go";
+import { Navigate } from '../Navigate';
+import { Link } from 'react-router-dom';
+import AddProduct from './AddProduct';
+import EditProduct from './EditProduct';
 const ManageProduct = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const [activeTab, setActiveTab] = useState("User Statics");
-
+    const [openAddModal, setOpenAddModal] = useState(false);
+    const [editModal, setEditModal] = useState(false);
+    const handleEdit = (record) => {
+     
+        setEditModal(true);
+      };
+    
     const showModal = () => {
         setIsModalOpen(true);
     };
@@ -235,16 +245,16 @@ const ManageProduct = () => {
                 return (
                     <div className="flex gap-2">
                         <button
-                            onClick={() => showModal(record)}
-                            className="border border-[#14803c] text-[#14803c] rounded-lg p-1 bg-[#d3e8e6]"
+                                  onClick={() => handleEdit(record)}
+                            className="border border-[#212121] rounded-lg p-1 bg-[#212121] "
                         >
-                            <MdBlockFlipped className="w-8 h-8 text-[#14803c]" />
+                            <FaEdit className="w-8 h-8 text-white" />
                         </button>
                         <button
-                            onClick={() => showModal2(record)}
-                            className="border border-[#14803c] rounded-lg p-1 bg-[#d3e8e6] text-[#14803c]"
+                   
+                            className="border border-[#212121] rounded-lg p-1 bg-[#212121] "
                         >
-                            <FaRegEye className="w-8 h-8 text-[#14803c]" />
+                            <MdDelete className="w-8 h-8 text-white" />
                         </button>
                     </div>
                 );
@@ -253,6 +263,10 @@ const ManageProduct = () => {
     ];
     return (
         <div>
+            <div className='flex justify-between'>
+                        <Navigate title={'Product Management'}></Navigate>
+                      <button  onClick={() => setOpenAddModal(true)} className='bg-[#212121] px-4 py-2 text-white'>+ Add New Shop</button>
+                        </div>
             <Table
                 dataSource={dataSource}
                 columns={columns}
@@ -260,14 +274,14 @@ const ManageProduct = () => {
                 scroll={{ x: "max-content" }}
             />
 
-            <Modal
+            {/* <Modal
                 open={isModalOpen2}
                 centered
                 onCancel={handleCancel2}
                 footer={null}
             >
                 <div className="w-full max-w-md  p-5 relative mx-auto">
-                    {/* Profile header */}
+                
                     <div className="flex flex-col items-center mb-6">
                         <div className="w-24 h-24 rounded-full bg-blue-100 mb-3 overflow-hidden">
                             <img
@@ -278,7 +292,7 @@ const ManageProduct = () => {
                         </div>
                         <h2 className="text-xl font-bold">Ely Mohammed</h2>
 
-                        {/* Contact info */}
+                     
                         <div className="flex items-center text-gray-500 mt-1">
                             <AiOutlinePhone size={16} className="text-gray-400" />
                             <span className="ml-1 text-sm">(629) 555-0129</span>
@@ -299,7 +313,12 @@ const ManageProduct = () => {
 
                   
                 </div>
-            </Modal></div>
+            </Modal> */}
+            <AddProduct setOpenAddModal={setOpenAddModal}
+        openAddModal={openAddModal}></AddProduct>
+        <EditProduct  editModal={editModal}
+        setEditModal={setEditModal}></EditProduct>
+            </div>
     );
 };
 

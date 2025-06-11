@@ -21,6 +21,8 @@ import About from "../page/Settings/About";
 import Login from "../Auth/Login";
 import ManageShope from "../page/ManageShop/ManageShope";
 import ManageProduct from "../page/manageProduct/ManageProduct";
+import AddNewShop from "../page/ManageShop/AddNewShop";
+import EditNewShop from "../page/ManageShop/EditNewShop";
 
 
 export const router = createBrowserRouter([
@@ -43,6 +45,14 @@ export const router = createBrowserRouter([
        {
         path: "/dashboard/manageShop",
         element: <ManageShope></ManageShope>
+      },
+      {
+        path: "/dashboard/manageShop/addNewShop",
+        element: <AddNewShop></AddNewShop>
+      },
+      {
+        path: "/dashboard/manageShop/editNewShope",
+        element: <EditNewShop></EditNewShop>
       },
        {
         path: "/dashboard/manageProduct",

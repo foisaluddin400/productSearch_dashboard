@@ -2,10 +2,14 @@ import React from 'react'
 import { Modal, Table } from "antd";
 
 import { useState } from "react";
-import { MdBlockFlipped } from "react-icons/md";
-import { FaRegEye } from "react-icons/fa";
+import { MdBlockFlipped, MdDelete } from "react-icons/md";
+import { FaEdit, FaRegEye } from "react-icons/fa";
 import { AiOutlinePhone, AiOutlineMail } from "react-icons/ai";
 import { GoLocation } from "react-icons/go";
+import { Navigate } from '../Navigate';
+import { Link } from 'react-router-dom';
+import img from '../../assets/header/ff.png'
+import { FaDeleteLeft } from 'react-icons/fa6';
 const ManageShope = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
@@ -234,17 +238,24 @@ const ManageShope = () => {
             render: (_, record) => {
                 return (
                     <div className="flex gap-2">
-                        <button
-                            onClick={() => showModal(record)}
-                            className="border border-[#14803c] text-[#14803c] rounded-lg p-1 bg-[#d3e8e6]"
-                        >
-                            <MdBlockFlipped className="w-8 h-8 text-[#14803c]" />
-                        </button>
+                        
                         <button
                             onClick={() => showModal2(record)}
-                            className="border border-[#14803c] rounded-lg p-1 bg-[#d3e8e6] text-[#14803c]"
+                            className="border border-[#212121]  rounded-lg p-1 bg-[#212121]"
                         >
-                            <FaRegEye className="w-8 h-8 text-[#14803c]" />
+                            <FaRegEye className="w-8 h-8 text-white" />
+                        </button>
+                      <Link to={'/dashboard/manageShop/editNewShope'}>  <button
+                            onClick={() => showModal(record)}
+                            className="border border-[#212121]  rounded-lg p-1 bg-[#212121]"
+                        >
+                            <FaEdit className="w-8 h-8 text-white" />
+                        </button></Link>
+                        <button
+                            onClick={() => showModal(record)}
+                            className="border border-[red] text-[red] rounded-lg p-1 "
+                        >
+                            <MdDelete className="w-8 h-8 text-[red]" />
                         </button>
                     </div>
                 );
@@ -253,6 +264,10 @@ const ManageShope = () => {
     ];
     return (
         <div>
+            <div className='flex justify-between'>
+            <Navigate title={'Manage Shop'}></Navigate>
+            <Link to={'/dashboard/manageShop/addNewShop'}><button className='bg-[#212121] px-4 py-2 text-white'>+ Add New Shop</button></Link>
+            </div>
             <Table
                 dataSource={dataSource}
                 columns={columns}
@@ -266,39 +281,64 @@ const ManageShope = () => {
                 onCancel={handleCancel2}
                 footer={null}
             >
-                <div className="w-full max-w-md  p-5 relative mx-auto">
-                    {/* Profile header */}
-                    <div className="flex flex-col items-center mb-6">
-                        <div className="w-24 h-24 rounded-full bg-blue-100 mb-3 overflow-hidden">
-                            <img
-                                src="https://avatar.iran.liara.run/public/24"
-                                alt="Profile avatar"
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                        <h2 className="text-xl font-bold">Ely Mohammed</h2>
+                <img src={img} alt="" />
+                  <div className="space-y-4 text-gray-800">
+        <h2 className="text-xl font-semibold">Benford Groceries</h2>
 
-                        {/* Contact info */}
-                        <div className="flex items-center text-gray-500 mt-1">
-                            <AiOutlinePhone size={16} className="text-gray-400" />
-                            <span className="ml-1 text-sm">(629) 555-0129</span>
-                        </div>
+        <div>
+          <h3 className="font-semibold">Shop Details</h3>
+          <div className="flex justify-between">
+            <p>— Location</p>
+            <p>2972 Westheimer Rd. Santa Ana, Illinois</p>
+          </div>
+          <div className="flex justify-between">
+            <p>— Contact Number</p>
+            <p>+1 (312) 555–0198</p>
+          </div>
+          <div className="flex justify-between">
+            <p>— Total Products</p>
+            <p>12</p>
+          </div>
+        </div>
 
-                        <div className="flex items-center text-gray-500 mt-1">
-                            <GoLocation size={16} className="text-gray-400" />
-                            <span className="ml-1 text-sm">Great Falls, Maryland</span>
-                        </div>
+        <div>
+          <h3 className="font-semibold">Shop Timing</h3>
+          <div className="flex justify-between">
+            <p>— Open Days</p>
+            <p>Mon – Sun</p>
+          </div>
+          <div className="flex justify-between">
+            <p>— Opening Time</p>
+            <p>10:00 AM</p>
+          </div>
+          <div className="flex justify-between">
+            <p>— Closing Time</p>
+            <p>10:00 PM</p>
+          </div>
+        </div>
 
-                        <div className="flex items-center text-gray-500 mt-1">
-                            <AiOutlineMail size={16} className="text-gray-400" />
-                            <span className="ml-1 text-sm">Marvin@gmail.com</span>
-                        </div>
-                    </div>
-
-                   
-
-                  
-                </div>
+        <div>
+          <h3 className="font-semibold">Available Product</h3>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {[
+              "Soft Drinks & Beverages",
+              "Chocolates & Snacks",
+              "Personal Care Products",
+              "Laundry & Cleaning Supplies",
+              "Health & Hygiene Items",
+              "Baby Products",
+              "Groceries & Dry Food"
+            ].map((item, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-gray-100 rounded-full text-sm border border-gray-300"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
             </Modal></div>
     );
 };

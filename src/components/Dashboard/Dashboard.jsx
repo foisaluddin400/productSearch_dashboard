@@ -4,6 +4,7 @@ import img1 from '../../assets/header/cc.png'
 import img2 from '../../assets/header/dd.png'
 import img3 from '../../assets/header/ee.png'
 import UserGrowthChart from "./UserGrowthChart";
+import RecentJoin from "./RecentJoin";
 // import ActivityStatisticsChart from "./ActivityChart";
 const Dashboard = () => {
 
@@ -75,6 +76,7 @@ const Dashboard = () => {
       {/* <div className="mt-4">
         <RecentlyJoinedUsers />
       </div> */}
+      <RecentJoin></RecentJoin>
     </div>
   );
 };

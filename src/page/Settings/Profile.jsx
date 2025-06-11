@@ -90,7 +90,7 @@ const Profile = () => {
 
               <button
                 type="primary"
-                className="w-full bg-[#205D39] text-white py-2"
+                className="w-full bg-[#212121] text-white py-2"
               >
                 Update
               </button>
