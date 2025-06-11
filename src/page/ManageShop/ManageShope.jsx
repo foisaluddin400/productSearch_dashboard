@@ -6,7 +6,7 @@ import { MdBlockFlipped } from "react-icons/md";
 import { FaRegEye } from "react-icons/fa";
 import { AiOutlinePhone, AiOutlineMail } from "react-icons/ai";
 import { GoLocation } from "react-icons/go";
-const UserManagement = () => {
+const ManageShope = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const [activeTab, setActiveTab] = useState("User Statics");
@@ -303,4 +303,4 @@ const UserManagement = () => {
     );
 };
 
-export default UserManagement;
+export default ManageShope;

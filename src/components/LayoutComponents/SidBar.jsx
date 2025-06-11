@@ -25,8 +25,18 @@ const items = [
     icon: user,
     link: "/dashboard/UserManagement",
   },
-
-  
+  {
+    key: "manageShop",
+    label: "Manage Shop",
+    icon: user,
+    link: "/dashboard/manageShop",
+  },
+    {
+    key: "manageProduct",
+    label: "Manage Product",
+    icon: user,
+    link: "/dashboard/manageProduct",
+  },
   
   {
     key: "categoriesManagement",

@@ -19,6 +19,8 @@ import ResetPass from "../Auth/ResetPass";
 import Notification from "../page/Notification/Notification";
 import About from "../page/Settings/About";
 import Login from "../Auth/Login";
+import ManageShope from "../page/ManageShop/ManageShope";
+import ManageProduct from "../page/manageProduct/ManageProduct";
 
 
 export const router = createBrowserRouter([
@@ -37,6 +39,14 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard/UserManagement",
         element: <UserManagement></UserManagement>,
+      },
+       {
+        path: "/dashboard/manageShop",
+        element: <ManageShope></ManageShope>
+      },
+       {
+        path: "/dashboard/manageProduct",
+        element: <ManageProduct></ManageProduct>
       },
       {
         path: "/dashboard/CreatorManagement",
