@@ -4,7 +4,7 @@ const About = () => {
     
     return (
         <div className=" mx-auto ">
-      afdgfdgdfg
+      afdgfdgdf
     </div>
     );
 };
