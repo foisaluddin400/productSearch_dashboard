@@ -1,284 +1,157 @@
-import React from "react";
-import { ConfigProvider, Modal } from "antd";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Modal, message } from "antd";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa6";
 import { RiDeleteBin6Line } from "react-icons/ri";
-
 import { CiEdit } from "react-icons/ci";
+import {
+  useAddFaqMutation,
+  useDeleteFaqMutation,
+  useGetFaqQuery,
+  useUpdateFaqMutation,
+} from "../redux/api/metaDataApi";
 
 const FAQ = () => {
-  const [isAccordionOpen, setIsAccordionOpen] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: faqData = [] } = useGetFaqQuery();
+  const [deleteFaq] = useDeleteFaqMutation();
+  const [addFaq] = useAddFaqMutation();
+  const [updateFaq] = useUpdateFaqMutation();
+
+  const [isAccordionOpen, setIsAccordionOpen] = useState(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [updateModalOpen, setUpdateModalOpen] = useState(false)
-
-  // Accordion data
-  const AccordionData = [
-    {
-      title: "What is HTML, and why is it important in web development?",
-      description:
-        "HTML (HyperText Markup Language) is the standard markup language used to create web pages. It provides the structure of a website and is essential for displaying content on the web.",
-    },
-    {
-      title: "What is CSS, and how does it enhance web design?",
-      description:
-        "CSS (Cascading Style Sheets) is a stylesheet language that allows developers to style and layout web pages. It controls the design, including colors, fonts, and layouts, making the site visually appealing.",
-    },
-    {
-      title: "What is JavaScript, and how is it used in web development?",
-      description:
-        "JavaScript is a scripting language that enables interactivity on web pages. It is widely used for tasks such as form validation, animations, and dynamic content updates, enhancing user experience.",
-    },
-    {
-      title: "Explain the concept of responsive web design.",
-      description:
-        "Responsive web design ensures that a website looks and functions well on various screen sizes, from desktops to mobile devices, by using flexible layouts, images, and CSS media queries.",
-    },
-    {
-      title:
-        "What are the differences between frontend and backend development?",
-      description:
-        "Frontend development focuses on the client side, including the layout and design that users interact with. Backend development involves server-side functionality, including databases, application logic, and APIs.",
-    },
-  ];
-
-  const handleClick = (index) => {
-    setIsAccordionOpen((prevIndex) => (prevIndex === index ? null : index));
-  };
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel2 = () => {
-    setAddModalOpen(false);
-  };
-  const handleCancel3 = () => {
-    setUpdateModalOpen(false);
-  };
-  const showModal2 = () => {
-    setAddModalOpen(true);
-  };
-  const showModal3 = () => {
-    setUpdateModalOpen(true);
-  };
-
-
-
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [selectedFaq, setSelectedFaq] = useState(null);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
 
+  const handleClick = (index) => {
+    setIsAccordionOpen((prev) => (prev === index ? null : index));
+  };
 
+  const handleAddFaq = async () => {
+    if (!question || !answer) return message.error("All fields are required");
+    try {
+      const res = await addFaq({ question, answer }).unwrap();
+      message.success(res?.message );
+      setAddModalOpen(false);
+      setQuestion("");
+      setAnswer("");
+    } catch (err) {
+      message.error(err?.data?.message);
+    }
+  };
+
+  const handleUpdateFaq = async () => {
+    if (!question || !answer || !selectedFaq?._id) return;
+    try {
+      const res = await updateFaq({ id: selectedFaq._id, data: { question, answer } }).unwrap();
+      message.success(res?.message );
+      setUpdateModalOpen(false);
+      setSelectedFaq(null);
+      setQuestion("");
+      setAnswer("");
+    } catch (err) {
+      message.error(err?.data?.message );
+    }
+  };
+
+  const handleDeleteFaq = async (id) => {
+    try {
+      const res = await deleteFaq(id).unwrap();
+      message.success(res?.message || "FAQ deleted successfully");
+    } catch (err) {
+      message.error(err?.data?.message || "Failed to delete FAQ");
+    }
+  };
+
+  const openUpdateModal = (faq) => {
+    setSelectedFaq(faq);
+    setQuestion(faq.question);
+    setAnswer(faq.answer);
+    setUpdateModalOpen(true);
+  };
 
   return (
     <div className="relative p-5 z-0">
       <div className="flex justify-between items-center">
-       
-        <div className="text-white">
-          <button
-            onClick={showModal2}
-            className="bg-[#212121] text-white font-semibold px-5 py-2 rounded transition duration-200"
-          >
-            + Add FAQ
-          </button>
-        </div>
+        <button
+          onClick={() => setAddModalOpen(true)}
+          className="bg-[#212121] text-white font-semibold px-5 py-2 rounded"
+        >
+          + Add FAQ
+        </button>
       </div>
 
-      <div className="flex gap-2 flex-col w-full mt-5 bg-white p-5">
-        {AccordionData?.map((accordion, index) => (
-          <section
-            key={index}
-            className="border-b border-[#e5eaf2] rounded py-3"
-          >
-            <div
-              className="flex gap-2 cursor-pointer items-center justify-between w-full"
-              onClick={() => handleClick(index)}
-            >
-              <h2 className="text-base font-normal md:font-bold md:text-2xl flex gap-2 items-center">
-                <FaRegQuestionCircle className="w-5 h-5 hidden md:flex" />
-                {accordion.title}
+      <div className="flex flex-col gap-3 mt-5 bg-white p-5">
+        {faqData?.data?.map((faq, index) => (
+          <div key={faq._id} className="border-b py-3">
+            <div className="flex justify-between items-center cursor-pointer" onClick={() => handleClick(index)}>
+              <h2 className="text-lg font-semibold flex gap-2 items-center">
+                <FaRegQuestionCircle /> {faq.question}
               </h2>
-              <div className="flex gap-2 md:gap-4 items-center">
-                <FaChevronDown
-                  className={`w-5 h-5 text-[#0D0D0D] transition-all duration-300 ${isAccordionOpen === index &&
-                    "rotate-[180deg] !text-[#14803c]"
-                    }`}
+              <div className="flex gap-3 items-center">
+                <FaChevronDown className={`transition-transform ${isAccordionOpen === index ? "rotate-180" : ""}`} />
+                <CiEdit
+                  className="text-2xl text-green-600 cursor-pointer"
+                  onClick={() => openUpdateModal(faq)}
                 />
-                <div className="border-2 px-1.5 py-1 rounded border-[#14803c] bg-[#f0fcf4]">
-                  <button className="" onClick={showModal3}>
-                    <CiEdit className="text-2xl cursor-pointer text-[#14803c] font-bold transition-all" />
-                  </button>
-                </div>
-                <div className="border-2 px-1.5 py-1 rounded border-[#14803c] bg-[#f0fcf4]">
-                  <button className="" onClick={showModal}>
-                    <RiDeleteBin6Line className="text-2xl cursor-pointer text-red-500 transition-all" />
-                  </button>
-                </div>
+                <RiDeleteBin6Line
+                  className="text-2xl text-red-500 cursor-pointer"
+                  onClick={() => handleDeleteFaq(faq._id)}
+                />
               </div>
             </div>
-            <div
-              className={`grid transition-all duration-300 overflow-hidden ease-in-out ${isAccordionOpen === index
-                ? "grid-rows-[1fr] opacity-100 mt-4"
-                : "grid-rows-[0fr] opacity-0"
-                }`}
-            >
-              <p className="text-[#424242] text-[0.9rem] overflow-hidden">
-                {accordion.description}
-              </p>
-            </div>
-          </section>
+            {isAccordionOpen === index && (
+              <p className="mt-3 text-gray-600">{faq.answer}</p>
+            )}
+          </div>
         ))}
       </div>
 
-      <Modal open={isModalOpen} centered onCancel={handleCancel} footer={null}>
+      {/* Add Modal */}
+      <Modal open={addModalOpen} onCancel={() => setAddModalOpen(false)} footer={null} centered>
         <div className="p-5">
-          <h1 className="text-4xl text-center text-[#0D0D0D]">
-            Are you sure you want to delete ?
-          </h1>
-
-          <div className="text-center py-5">
-            <button
-              onClick={handleOk}
-              className="bg-[#212121] text-white font-semibold w-full py-2 rounded transition duration-200"
-            >
-              YES,DELETE
-            </button>
-          </div>
-          <div className="text-center pb-5">
-            <button
-              onClick={handleOk}
-              className="text-[#14803c] border-2 border-green-600 bg-white font-semibold w-full py-2 rounded transition duration-200"
-            >
-              NO,DON’T DELETE
-            </button>
+          <h2 className="text-xl font-bold mb-4">Add FAQ</h2>
+          <input
+            className="w-full border p-2 mb-4"
+            placeholder="Question"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+          />
+          <textarea
+            className="w-full border p-2 mb-4"
+            placeholder="Answer"
+            rows={4}
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+          />
+          <div className="flex justify-end gap-3">
+            <button onClick={() => setAddModalOpen(false)} className="px-4 py-2 border rounded">Cancel</button>
+            <button onClick={handleAddFaq} className="px-4 py-2 bg-[#212121] text-white rounded">Save</button>
           </div>
         </div>
       </Modal>
-      <Modal
-        open={addModalOpen}
-        centered
-        onCancel={handleCancel2}
-        footer={null}
-      >
+
+      {/* Update Modal */}
+      <Modal open={updateModalOpen} onCancel={() => setUpdateModalOpen(false)} footer={null} centered>
         <div className="p-5">
-          <h2 className="text-2xl font-bold text-center mb-2">Add FAQ</h2>
-
-          <p className="text-center mb-6 text-gray-700">
-            Fill out the details below to add a new FAQ. Ensure the answer provides clarity and helps users quickly
-            resolve their queries.
-          </p>
-
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="question" className="block text-sm font-medium mb-1">
-                Question for the FAQ
-              </label>
-              <input
-                id="question"
-                type="text"
-                placeholder="Enter the FAQ"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="answer" className="block text-sm font-medium mb-1">
-                Answer to the FAQ
-              </label>
-              <textarea
-                id="answer"
-                placeholder="Enter the FAQ Answer"
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mt-6">
-            <button
-              onClick={handleCancel2}
-              className="py-2 px-4 rounded-lg border border-[#EF4444] bg-red-50"
-            >
-              Cancel
-            </button>
-
-            <button
-              onClick={handleCancel2}
-              className="py-2 px-4 rounded-lg bg-green-600 text-white"
-            >
-              Save
-            </button>
-          </div>
-        </div>
-      </Modal>
-      vai ektu osusto jor ace
-      ekhon officer AC ta sojjo hocce nah tai ajk home office kori 
-      muhammedkhan373 || Product search app ei project er dashboard ta design kore diye kaj er update dibo apnk
-      <Modal
-        open={updateModalOpen}
-        centered
-        onCancel={handleCancel3}
-        footer={null}
-      >
-        <div className="p-5">
-          <h2 className="text-2xl font-bold text-center mb-2">Update FAQ</h2>
-
-          <p className="text-center mb-6 text-gray-700">
-            Fill out the details below to add a new FAQ. Ensure the answer provides clarity and helps users quickly
-            resolve their queries.
-          </p>
-
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="question" className="block text-sm font-medium mb-1">
-                Question for the FAQ
-              </label>
-              <input
-                id="question"
-                type="text"
-                placeholder="Enter the FAQ"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="answer" className="block text-sm font-medium mb-1">
-                Answer to the FAQ
-              </label>
-              <textarea
-                id="answer"
-                placeholder="Enter the FAQ Answer"
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mt-6">
-            <button
-              onClick={handleCancel3}
-              className="py-2 px-4 rounded-lg border border-[#EF4444] bg-red-50"
-            >
-              Cancel
-            </button>
-
-            <button
-              onClick={handleCancel3}
-              className="py-2 px-4 rounded-lg bg-green-600 text-white"
-            >
-              Save
-            </button>
+          <h2 className="text-xl font-bold mb-4">Update FAQ</h2>
+          <input
+            className="w-full border p-2 mb-4"
+            placeholder="Question"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+          />
+          <textarea
+            className="w-full border p-2 mb-4"
+            placeholder="Answer"
+            rows={4}
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+          />
+          <div className="flex justify-end gap-3">
+            <button onClick={() => setUpdateModalOpen(false)} className="px-4 py-2 border rounded">Cancel</button>
+            <button onClick={handleUpdateFaq} className="px-4 py-2 bg-[#212121] text-white rounded">Update</button>
           </div>
         </div>
       </Modal>

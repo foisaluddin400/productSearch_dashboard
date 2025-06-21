@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Avatar, Upload, Form, Input, Button, message } from "antd";
 import { IoCameraOutline } from "react-icons/io5";
 import { PasswordTab } from "./PasswordTab";
+import { useGetProfileQuery, useUpdateProfileMutation } from "../redux/api/userApi";
 
 
 
@@ -10,7 +11,9 @@ import { PasswordTab } from "./PasswordTab";
 
 
 const Profile = () => {
-
+const {data:adminProfile} = useGetProfileQuery();
+console.log(adminProfile)
+const [updateProfile] = useUpdateProfileMutation()
   const [activeTab, setActiveTab] = useState("1");
   // const[updateProfile] = useUpdateProfileMutation();
   const [form] = Form.useForm();
@@ -19,7 +22,7 @@ const Profile = () => {
   
 
 
-  
+
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -29,31 +32,33 @@ const Profile = () => {
  
 
 
-  // useEffect(() => {
-  //   if (profile) {
-  //     form.setFieldsValue({
-  //       name: profile.name,
-  //       email: profile.email,
-  //       phone: profile.phone,
-  //     });
-  //   }
-  // }, [profile, form]);
+ useEffect(() => {
+    if (adminProfile?.data) {
+      const admin = adminProfile.data;
+      form.setFieldsValue({
+        name: admin.name,
+        email: admin.email,
+        phone: admin.phone || '',
+        address: admin.address || "",
+      });
+    }
+  }, [adminProfile, form]);
 
   const onEditProfile = async (values) => {
-    // const data = new FormData();
-    // if (image) data.append("photo", image);
-    // data.append("name", values.name);
-    // data.append("phone", values.phone);
-    //  try {
-    //       const response = await updateProfile(data).unwrap();
-    //       console.log(response)
-    //       message.success(response.message);
+    const data = new FormData();
+    if (image) data.append("profile_image", image);
+    data.append("name", values.name);
+    data.append("phone", values.phone);
+     try {
+          const response = await updateProfile(data).unwrap();
+          console.log(response)
+          message.success(response.message);
 
-    //     } catch (error) {
-    //       message.error(error.data.message);
+        } catch (error) {
+          message.error(error.data.message);
          
-    //       console.log(error);
-    //     }
+          console.log(error);
+        }
   };
 
 
@@ -123,7 +128,7 @@ const Profile = () => {
             src={`${
               image
                 ? URL.createObjectURL(image)
-                : `ddd`
+                : `${adminProfile?.data?.profile_image}`
             }`}
             alt="Admin Profile"
           />

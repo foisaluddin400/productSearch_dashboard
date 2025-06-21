@@ -1,29 +1,27 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Checkbox, Form, Input, message } from "antd";
-// import { useForgotPasswordMutation } from "../page/redux/api/userApi";
+import { useForgotPasswordMutation } from "../page/redux/api/userApi";
+
 
 
 const ForgetPass = () => {
-  // const navigate = useNavigate()
-  // const[forgotPassword] = useForgotPasswordMutation();
-
-
-
+  const navigate = useNavigate()
+  const[forgotPassword] = useForgotPasswordMutation();
 
   const onFinish = async (values) => {
     
- 
+ console.log(values)
     
 
-    // forgotPassword(values)
-    //   .unwrap()
-    //   .then((payload) => {
+    forgotPassword(values)
+      .unwrap()
+      .then((payload) => {
   
-    //     message.success(payload?.message);
-    //     navigate("/verify");
-    //     localStorage.setItem("email", values?.email);
-    //   })
-    //   .catch((error) => message.error(error?.data?.message));
+        message.success(payload?.message);
+        navigate("/verify");
+        localStorage.setItem("email", values?.email);
+      })
+      .catch((error) => message.error(error?.data?.message));
   };
 
   return (

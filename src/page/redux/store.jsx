@@ -3,8 +3,10 @@ import { persistReducer, persistStore } from 'redux-persist';
 import storage from "redux-persist/lib/storage";
 
 
-import { baseApi } from './api/baseApi';
+
 import { authSlice } from './features/auth/authSlice';
+import { baseApi } from './api/baseApi';
+
 
 const persistConfig = {
     key: "quiz-app",

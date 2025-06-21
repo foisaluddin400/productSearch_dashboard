@@ -10,47 +10,40 @@ import {
 } from "recharts";
 import React, { useEffect, useMemo, useState } from "react";
 import { Select } from "antd";
+import { useGetUserGrowthQuery } from "../../page/redux/api/metaDataApi";
 
 const UserGrowthChart = () => {
+    const [year, setYears] = useState(2025);
+  const{data: userGrowth} = useGetUserGrowthQuery(year)
   const currentYear = new Date().getFullYear();
-  const [year, setYear] = useState(currentYear);
-  const [years, setYears] = useState([]);
 
-  useEffect(() => {
-    const startYear = 2024;
-    const yearsArray = Array.from(
-      { length: currentYear - startYear + 1 },
-      (_, index) => startYear + index
-    );
-    setYears(yearsArray);
-  }, [currentYear]);
 
-  const { monthlyData, maxUsers } = useMemo(() => {
-    const monthMap = {
-      Jan: 450,
-      Feb: 200,
-      Mar: 800,
-      Apr: 400,
-      May: 230,
-      Jun: 400,
-      Jul: 450,
-      Aug: 500,
-      Sep: 550,
-      Oct: 600,
-      Nov: 650,
-      Dec: 700,
-    };
+   const items = [
+    { value: '2025', label: '2025' },
+    { value: '2024', label: '2024' },
+    { value: '2023', label: '2023' },
+    { value: '2022', label: '2022' }
+  ];
 
-    const maxUsers = Math.max(...Object.values(monthMap), 0) + 4;
+  const handleYearChange = (value) => {
+    setYears(value); 
+  };
 
-    return {
-      monthlyData: Object.keys(monthMap).map((month) => ({
-        name: month,
-        totalUser: monthMap[month],
-      })),
-      maxUsers,
-    };
-  }, []);
+
+ const { monthlyData, maxUsers } = useMemo(() => {
+  const rawData = userGrowth?.data?.chartData || [];
+
+  const maxUsers = Math.max(...rawData.map(item => item.totalUser), 0) + 10;
+
+  return {
+    monthlyData: rawData.map(item => ({
+      name: item.month,
+      totalUser: item.totalUser
+    })),
+    maxUsers,
+  };
+}, [userGrowth]);
+
 
   return (
     <div
@@ -76,17 +69,17 @@ const UserGrowthChart = () => {
           📈 User Growth
         </h3>
         <Select
-          className="min-w-32"
-          value={year}
-          placeholder="Select year"
-          onChange={setYear}
-          style={{
-            marginBottom: "15px",
-            width: "150px",
-            fontWeight: "500",
-          }}
-          options={years.map((item) => ({ value: item, label: item }))}
-        />
+  defaultValue={year}
+  onChange={handleYearChange}
+  style={{ width: 120 }}
+  options={[
+    { value: 2025, label: '2025' },
+    { value: 2024, label: '2024' },
+    { value: 2023, label: '2023' },
+    { value: 2022, label: '2022' }
+  ]}
+/>
+
       </div>
       <ResponsiveContainer width="100%" height="85%">
         <BarChart

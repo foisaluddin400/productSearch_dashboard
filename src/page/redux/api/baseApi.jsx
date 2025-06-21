@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://10.0.60.37:6050",
+  baseUrl: "http://10.0.60.137:5005",
   // prepareHeaders: (headers) => {
   //   const token = JSON.parse(localStorage.getItem("accessToken"));
   //   if (token) {
@@ -10,10 +10,10 @@ const baseQuery = fetchBaseQuery({
   //   return headers;
   // },
   prepareHeaders: (headers, { getState }) => {
-    const token = getState().logInUser.token;
-    console.log("from baseApi", token);
-    if (token) {
-      headers.set("authorization", `${token}`);
+    const accessToken = getState().logInUser.accessToken;
+    console.log("from baseApi", accessToken);
+    if (accessToken) {
+      headers.set("authorization", `${accessToken}`);
     }
     return headers;
   },
@@ -26,5 +26,5 @@ export const baseApi = createApi({
   endpoints: () => ({}),
 });
 
-export const imageUrl = "http://10.0.60.37:6050";
+export const imageUrl = "http://10.0.60.137:5005";
 // asdfsf

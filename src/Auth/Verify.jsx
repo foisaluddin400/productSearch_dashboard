@@ -2,50 +2,51 @@ import { useState } from "react";
 import OTPInput from "react-otp-input";
 
 import { Link, useNavigate } from "react-router-dom";
-// import { useResendHitMutation, useVerifyOtpMutation } from "../page/redux/api/userApi";
+
 import { message } from "antd";
+import { useResentHitMutation, useVerifyOtpMutation } from "../page/redux/api/userApi";
 
 const Verify = () => {
   const [otp, setOtp] = useState("");
-  // const [verifyOtp] = useVerifyOtpMutation();
-  // const [resendVerifyOtp]= useResendHitMutation()
-  // const navigate = useNavigate()
+  const [verifyOtp] = useVerifyOtpMutation();
+  const [resendVerifyOtp]= useResentHitMutation()
+  const navigate = useNavigate()
   const handleVerify = () => {
-    // const data = {
-    //   otp: otp,
-    //   email: localStorage.getItem("email"),
-    // };
+    const data = {
+      resetCode: Number(otp),
+      email: localStorage.getItem("email"),
+    };
   
-    // verifyOtp( data )
-    //   .unwrap()
-    //   .then((response) => {
+    verifyOtp( data )
+      .unwrap()
+      .then((response) => {
    
-    //     message.success(response?.message);
-    //     navigate("/reset");
-    //     localStorage.setItem("token", response?.passwordResetToken);
-    //   })
-    //   .catch((error) => {
-    //     console.error(error); 
-    //     message.error(error?.data?.message);
-    //   });
+        message.success(response?.message);
+        navigate("/reset");
+        localStorage.setItem("token", response?.passwordResetToken);
+      })
+      .catch((error) => {
+        console.error(error); 
+        message.error(error?.data?.message);
+      });
   };
 
   const handleResend = () => {
-    // const data = {
-    //   email: localStorage.getItem("email"),
-    //   type: "forgot_password",
-    // };
+    const data = {
+      email: localStorage.getItem("email"),
+      // type: "forgot_password",
+    };
   
-    // resendVerifyOtp(data)
-    //   .unwrap()
-    //   .then((response) => {
+    resendVerifyOtp(data)
+      .unwrap()
+      .then((response) => {
       
-    //     message.success(response.message);
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //     message.error(error?.data?.message );
-    //   });
+        message.success(response.message);
+      })
+      .catch((error) => {
+        console.error(error);
+        message.error(error?.data?.message );
+      });
   };
   return (
     <div className="min-h-screen  bg-gray-100">

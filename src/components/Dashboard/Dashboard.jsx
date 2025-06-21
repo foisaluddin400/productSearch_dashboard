@@ -5,9 +5,11 @@ import img2 from '../../assets/header/dd.png'
 import img3 from '../../assets/header/ee.png'
 import UserGrowthChart from "./UserGrowthChart";
 import RecentJoin from "./RecentJoin";
+import { useGetCountQuery } from "../../page/redux/api/metaDataApi";
 // import ActivityStatisticsChart from "./ActivityChart";
 const Dashboard = () => {
-
+const {data:countData} = useGetCountQuery();
+console.log(countData)
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -21,23 +23,24 @@ const Dashboard = () => {
     }, 2000);
   }, []);
 
-  const cardData = [
-    {
-      title: "Total Users",
-      value:  data?.TotalUsers ?? 0,
-      icon: <img src={img1} alt="" />,
-    },
-    {
-      title: "Total Listings",
-      value: data?.TotalListings ?? 0,
-      icon: <img src={img2} alt="" />,
-    },
-    {
-      title: "Categories",
-      value:  data?.Categories ?? 0,
-      icon: <img src={img3} alt="" />,
-    },
-  ];
+const cardData = [
+  {
+    title: "Total Users",
+    value: countData?.data?.totalUser ?? 0,
+    icon: <img src={img1} alt="" />,
+  },
+  {
+    title: "Total Shop",
+    value: countData?.data?.totalShop ?? 0,
+    icon: <img src={img2} alt="" />,
+  },
+  {
+    title: "Total Product",
+    value: countData?.data?.totalProduct ?? 0,
+    icon: <img src={img3} alt="" />,
+  },
+];
+
   return (
     <div className="p-2 min-h-screen">
        <div className="flex items-center justify-between bg-gradient-to-tr from-[#ffffff] via-white to-[#212121] p-12 rounded-xl">

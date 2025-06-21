@@ -1,29 +1,30 @@
 import { Checkbox, Form, Input, message } from "antd";
-// import { useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { Link, useNavigate } from "react-router-dom";
-// import { setToken } from "../page/redux/features/auth/authSlice";
-// import { useLoginAdminMutation } from "../page/redux/api/userApi";
+import { useLoginAdminMutation } from "../page/redux/api/userApi";
+import { setToken } from "../page/redux/features/auth/authSlice";
+
 const Login = () => {
-//   const navigate = useNavigate();
-//   const dispatch = useDispatch();
-// const [loginAdmin] = useLoginAdminMutation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+const [loginAdmin] = useLoginAdminMutation();
   const onFinish = async (values) => {
-  
-    // loginAdmin(values)
-    //   .unwrap()
-    //   .then((payload) => {
-    //     if (payload) {
+  console.log(values)
+    loginAdmin(values)
+      .unwrap()
+      .then((payload) => {
+        if (payload) {
      
-    //       dispatch(setToken(payload?.accessToken));
-    //       message.success(payload?.message);
-    //       navigate("/");
-    //     } 
-    //   })
-    //   .catch((error) => {
-    //     console.error("Login error:", error);
-    //     message.error(error?.data?.message );
-    //   });
+          dispatch(setToken(payload?.data?.accessToken));
+          message.success(payload?.message);
+          navigate("/");
+        } 
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+        message.error(error?.data?.message );
+      });
   };
 
   return (

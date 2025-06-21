@@ -66,8 +66,8 @@ select option {
 
 /* Active pagination button */
 .ant-pagination-item-active {
-  background-color: #D9000A !important; /* Active background color */
-  border-color: #D9000A !important;    /* Active border color */
+  background-color: #212121 !important; /* Active background color */
+  border-color: #212121 !important;    /* Active border color */
 }
 
 /* Active pagination button text */

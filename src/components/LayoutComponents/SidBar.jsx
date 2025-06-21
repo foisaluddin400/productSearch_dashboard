@@ -151,7 +151,7 @@ const SidBar = () => {
     <div className="custom-sidebar h-[100vh] ">
       
       <div className="custom-sidebar-logo flex justify-center mt-4">
-        <img src={logo} alt="Logo" className="w-[130px]" />
+        <Link to={'/'}><img src={logo} alt="Logo" className="w-[130px]" /></Link>
       </div>
       <div className="menu-items mt-6">
         {items.map((item) => {

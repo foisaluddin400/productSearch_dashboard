@@ -2,36 +2,42 @@ import { Button, Form, Input, message } from "antd";
 import React, { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
+import { useChangePasswordMutation } from "../redux/api/userApi";
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/features/auth/authSlice";
 
 
 export const PasswordTab = () => {
-//   const [changePassword] = useChangePasswordMutation();
-
+  const [changePassword] = useChangePasswordMutation();
+  const dispatch = useDispatch();
   const [passError, setPassError] = useState("");
   const navigate = useNavigate();
 
   const handlePasswordChange = async (values) => {
-    // if (values?.newPassword === values.oldPassword) {
-    //   return setPassError("Your old password cannot be your new password.");
-    // }
-    // if (values?.newPassword !== values?.confirmPassword) {
-    //   return setPassError("Confirm password doesn't match.");
-    // } else {
-    //   setPassError("");
-    // }
+    if (values?.newPassword === values.oldPassword) {
+      return setPassError("Your old password cannot be your new password.");
+    }
+    if (values?.newPassword !== values?.confirmPassword) {
+      return setPassError("Confirm password doesn't match.");
+    } else {
+      setPassError("");
+    }
 
-    // const data = {
-    //   current_password: values.currentPassword,
-    //   new_password: values.newPassword,
-    // };
-    // try {
-    //   const response = await changePassword(data).unwrap();
-    //   message.success(response.message);
-    //   console.log(response);
-    // } catch (error) {
-    //   console.log(error);
-    //   message.error(error.data.message);
-    // }
+    const data = {
+      oldPassword: values.currentPassword,
+      newPassword: values.newPassword,
+      confirmNewPassword: values.confirmPassword
+    };
+    try {
+      const response = await changePassword(data).unwrap();
+      message.success(response.message);
+      console.log(response);
+      dispatch(logout());
+    navigate("/login");
+    } catch (error) {
+      console.log(error);
+      message.error(error.data.message);
+    }
   };
 //adffad
   return (

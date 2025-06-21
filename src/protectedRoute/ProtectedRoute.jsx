@@ -36,11 +36,11 @@ const ProtectedRoute = ({ children }) => {
 
   // return children;
   
-  const {token} = useSelector((state) => state.logInUser)
-  console.log(token)
+  const {accessToken} = useSelector((state) => state.logInUser)
+  console.log(accessToken)
   const { pathname } = useLocation();
 
-  if (!token) {
+  if (!accessToken) {
       return <Navigate to="/login" state={{ path: pathname }}></Navigate>;
   }
   return children;

@@ -1,221 +1,318 @@
+import { useState } from "react";
+import { LoadScript, Autocomplete } from "@react-google-maps/api";
+import React, { useRef } from "react";
+
 import {
   Button,
-  Checkbox,
+  Col,
   Form,
   Input,
-  message,
-  Radio,
+  Row,
   Select,
   Spin,
   TimePicker,
   Upload,
+  message,
 } from "antd";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import React, { useEffect, useState } from "react";
-import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-dayjs.extend(customParseFormat);
+import { UploadOutlined } from "@ant-design/icons";
+import { useAddShopProductMutation, useGetProductQuery } from "../redux/api/productManageApi";
 
-import { Navigate } from "../Navigate";
+const { Option } = Select;
 
-const AddNewShop = () => {
-  const [form] = Form.useForm();
 
-  const options = [];
-  for (let i = 10; i < 36; i++) {
-    options.push({
-      value: i.toString(36) + i,
-      label: i.toString(36) + i,
-    });
-  }
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
+const ShopCreateForm = () => {
+
+
   const [fileList, setFileList] = useState([]);
-  const [loading, setLoading] = useState(false);
+
   const onChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
-
   const onPreview = async (file) => {
-    let src = file.url;
-    if (!src) {
-      src = await new Promise((resolve) => {
+    let src =
+      file.url ||
+      (await new Promise((resolve) => {
         const reader = new FileReader();
         reader.readAsDataURL(file.originFileObj);
         reader.onload = () => resolve(reader.result);
-      });
-    }
+      }));
     const image = new Image();
     image.src = src;
     const imgWindow = window.open(src);
     imgWindow?.document.write(image.outerHTML);
   };
 
+  const { data: availableProductId, isLoading: productLoading } = useGetProductQuery();
+
+  console.log(availableProductId)
+  const dynamicProductOptions = availableProductId?.data?.result || [];
+
+  const [form] = Form.useForm();
+
+  const [loading, setLoading] = useState(false);
+
+  const [addShopProduct, { isLoading }] = useAddShopProductMutation();
+
   const onFinish = async (values) => {
-    console.log(values);
+    setLoading(true);
+    try {
+      const formData = new FormData();
+
+      fileList.forEach((file) => {
+        formData.append("shop_image", file.originFileObj);
+      });
+
+      const coordinates = values.shopAdress
+        .split(",")
+        .map((c) => parseFloat(c.trim()));
+
+      const data = {
+        shopName: values.name,
+        contactNumber: values.contact,
+        location: {
+          type: "Point",
+          coordinates: coordinates,
+        },
+        openDays: values.openDays,
+        openingTime: values.openingTime.format("HH:mm"),
+        closingTime: values.closingTime.format("HH:mm"),
+        shopType: values.shopType,
+        availalbeProducts: values.availableProducts, // array of selected product IDs
+
+      };
+
+      formData.append("data", JSON.stringify(data));
+
+      const res = await addShopProduct(formData);
+
+      if (res?.data?.success) {
+        message.success('Add Successfull');
+        form.resetFields();
+        setFileList([]);
+        setLoading(false);
+      } else {
+        message.error(message?.data?.error);
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error(error);
+      message.error(message?.data?.error);
+    }
+
+
   };
 
+  const handleFileChange = ({ fileList }) => {
+    setFileList(fileList.slice(-1));
+  };
+
+  const libraries = ["places"];
+  const googleMapsApiKey = import.meta.env.VITE_REACT_APP_GOOGLE_MAPS_API_KEY;
+  const autocompleteRef = useRef(null);
+
+  const [shopAddress, setShopAddress] = useState("");
+
+  const onPlaceChanged = () => {
+    if (autocompleteRef.current !== null) {
+      const place = autocompleteRef.current.getPlace();
+      const location = place.geometry?.location;
+
+      if (location) {
+        const lat = location.lat();
+        const lng = location.lng();
+        const address = `${lng}, ${lat}`;
+
+        setShopAddress(address); // Update input
+        form.setFieldsValue({
+          shopAdress: address, // Update AntD Form
+        });
+      }
+    }
+  };
+
+
+
   return (
-    <div className="p-1">
-      <Navigate title="Add New Shop" />
-      <div id="recipe" className="p-5 mt-4 bg-white h-screen">
-        <Form
-          form={form}
-          name="dynamic_form"
-          onFinish={onFinish}
-          layout="vertical"
-        >
-          <div className="">
+    <Form form={form} layout="vertical" onFinish={onFinish}>
+      <Row gutter={16}>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            label="Shop Name"
+            name="name"
+            rules={[{ required: true, message: "Please enter shop name" }]}
+          >
+            <Input placeholder="Enter shop name" />
+          </Form.Item>
+        </Col>
+
+        <Col xs={24} sm={12}>
+          <Form.Item
+            label="Contact Number"
+            name="contact"
+            rules={[{ required: true, message: "Please enter contact number" }]}
+          >
+            <Input placeholder="Enter contact number" />
+          </Form.Item>
+        </Col>
+
+        <Col xs={24} sm={12}>
+          {/* <Form.Item
+            label="Shop Address (lng, lat)"
+            name="shopAdress"
+            rules={[
+              {
+                required: true,
+                message: "Please enter coordinates (lng, lat)",
+              },
+            ]}
+          >
+            <LoadScript
+              googleMapsApiKey={googleMapsApiKey}
+              libraries={libraries}
+            >
+              <Autocomplete
+                onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
+                onPlaceChanged={onPlaceChanged}
+              >
+                <Input placeholder="Search shop location" />
+              </Autocomplete>
+            </LoadScript>
+          </Form.Item> */}
+          <Form.Item
+            label="Shop Address (lng, lat)"
+            name="shopAdress"
+            rules={[
+              {
+                required: true,
+                message: "Please enter coordinates (lng, lat)",
+              },
+            ]}
+          >
+            <LoadScript googleMapsApiKey={googleMapsApiKey} libraries={libraries}>
+              <Autocomplete
+                onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
+                onPlaceChanged={onPlaceChanged}
+              >
+                <Input
+                  placeholder="Search shop location"
+                  value={shopAddress}
+                  onChange={(e) => {
+                    setShopAddress(e.target.value);
+                    form.setFieldsValue({ shopAdress: e.target.value });
+                  }}
+                />
+              </Autocomplete>
+            </LoadScript>
+          </Form.Item>
+        </Col>
+
+
+        <Col xs={24} sm={12}>
+          <Form.Item
+            label="Open Days"
+            name="openDays"
+            rules={[{ required: true, message: "Please enter open days" }]}
+          >
+            <Select mode="tags" placeholder="e.g. Saturday, Sunday">
+              <Option value="Saturday">Saturday</Option>
+              <Option value="Sunday">Sunday</Option>
+              <Option value="Monday">Monday</Option>
+              <Option value="Tuesday">Tuesday</Option>
+              <Option value="Wednesday">Wednesday</Option>
+              <Option value="Thursday">Thursday</Option>
+              <Option value="Friday">Friday</Option>
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col xs={24} sm={12}>
+          <Form.Item
+            label="Opening Time"
+            name="openingTime"
+            rules={[{ required: true, message: "Please select opening time" }]}
+          >
+            <TimePicker format="HH:mm" />
+          </Form.Item>
+        </Col>
+
+        <Col xs={24} sm={12}>
+          <Form.Item
+            label="Closing Time"
+            name="closingTime"
+            rules={[{ required: true, message: "Please select closing time" }]}
+          >
+            <TimePicker format="HH:mm" />
+          </Form.Item>
+        </Col>
+
+        <Col xs={24} sm={12}>
+          <Form.Item
+            label="Shop Type"
+            name="shopType"
+            rules={[{ required: true, message: "Please select shop type" }]}
+          >
+            <Select placeholder="Select shop type">
+              <Option value="Supermarket">Supermarket</Option>
+              <Option value="LocalStore">LocalStore</Option>
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col xs={24} sm={12}>
+          <Form.Item
+            label="Available Product Categories"
+            name="availableProducts"
+            rules={[
+              {
+                required: true,
+                message: "Please select available product categories",
+              },
+            ]}
+          >
+            <Select
+              mode="multiple"
+              placeholder="Select product categories"
+              loading={productLoading}
+            >
+              {dynamicProductOptions.map((product) => (
+                <Option key={product._id} value={product._id}>
+                  {product.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+        </Col>
+
+        <Col xs={24}>
+          <Form.Item label="Photos">
             <Upload
               listType="picture-card"
               fileList={fileList}
               onChange={onChange}
               onPreview={onPreview}
-              multiple={true}
+              multiple={true} // Allow multiple files
             >
-              {fileList.length < 1 && "+ Upload"}
+              {fileList.length < 5 && '+ Upload'}
             </Upload>
-            <div className="grid grid-cols-2 gap-11">
-              <Form.Item
-                label="Shop Name"
-                name="name"
-                rules={[
-                  { required: true, message: "Please input Shop Name!" },
-                ]}
-              >
-                <Input placeholder="Enter Shop Name" />
-              </Form.Item>
-
-              <Form.Item
-                label="Contact Number"
-                name="contact"
-                rules={[
-                  { required: true, message: "Please input Contact Number!" },
-                ]}
-              >
-                <Input placeholder="Enter Contact Number" />
-              </Form.Item>
-            </div>
-            <Form.Item
-              label="Shop Address Coordinate "
-              name="shopAdress"
-              rules={[{ required: true, message: "Please input Shop Address Coordinate " }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="Open Days"
-              name="flavor"
-              rules={[
-                { required: true, message: "Please select Open Days" },
-              ]}
-            >
-              <Select
-                mode="tags"
-                style={{ width: "100%" }}
-                placeholder="Open Days"
-                onChange={handleChange}
-                options={options}
-              />
-            </Form.Item>
-
-            {/* Middle Column */}
-
-            <div className="grid grid-cols-2 gap-11">
-              <Form.Item
-                label="Opening Time"
-                name="flavor"
-                rules={[
-                  { required: true, message: "Please select Opening Time" },
-                ]}
-              >
-                <TimePicker
-                className="w-full"
-                  onChange={onChange}
-                  defaultOpenValue={dayjs("00:00:00", "HH:mm:ss")}
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Closing Time"
-                name="flavor"
-                rules={[
-                  { required: true, message: "Please select Closing Time" },
-                ]}
-              >
-                <TimePicker
-                 className="w-full"
-                  onChange={onChange}
-                  defaultOpenValue={dayjs("00:00:00", "HH:mm:ss")}
-                />
-              </Form.Item>
-            </div>
-
-            <div>
-              <Form.Item
-                label="Shop Type"
-                name="holiday_recipes"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select a Shop Type",
-                  },
-                ]}
-              >
-                <Select
-                  mode="tags"
-                  style={{ width: "100%" }}
-                  placeholder="Tags Mode"
-                  onChange={handleChange}
-                  options={options}
-                />
-              </Form.Item>
-              <Form.Item
-                label="Product Categories Available"
-                name="holiday_recipes"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select a Product Categories Available",
-                  },
-                ]}
-              >
-                <Select
-                  mode="tags"
-                  style={{ width: "100%" }}
-                  placeholder="Product Categories Available"
-                  onChange={handleChange}
-                  options={options}
-                />
-              </Form.Item>
-            </div>
-
-            {/* Right Column */}
-            <div></div>
-          </div>
-
-          <Form.Item>
-            <div className="flex justify-center gap-5 mt-11">
-              <button
-                className="bg-[#495F48] px-16 py-3 text-white rounded"
-                type="submit"
-                disabled={loading}
-              >
-                {loading ? <Spin size="small" /> : "Create"}
-              </button>
-              <button
-                className="bg-red-500 px-16 py-3 text-white rounded"
-                type="button"
-              >
-                Cancel
-              </button>
-            </div>
           </Form.Item>
-        </Form>
-      </div>
-    </div>
+        </Col>
+
+        <Col xs={24}>
+          <Form.Item>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-8 py-2 mt-2 bg-[#212121] text-white rounded-md"
+            >
+              {loading ? <Spin size="small" /> : "Add"}
+            </button>
+          </Form.Item>
+        </Col>
+      </Row>
+    </Form>
   );
 };
 
-export default AddNewShop;
+export default ShopCreateForm;

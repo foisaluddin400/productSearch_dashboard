@@ -23,6 +23,7 @@ import ManageShope from "../page/ManageShop/ManageShope";
 import ManageProduct from "../page/manageProduct/ManageProduct";
 import AddNewShop from "../page/ManageShop/AddNewShop";
 import EditNewShop from "../page/ManageShop/EditNewShop";
+import ProtectedRoute from "../protectedRoute/ProtectedRoute";
 
 
 export const router = createBrowserRouter([
@@ -30,7 +31,7 @@ export const router = createBrowserRouter([
     path: "/",
     element: (
      
-        <DashboardLayout></DashboardLayout>
+        <ProtectedRoute><DashboardLayout></DashboardLayout></ProtectedRoute>
       
     ),
     children: [
@@ -51,7 +52,7 @@ export const router = createBrowserRouter([
         element: <AddNewShop></AddNewShop>
       },
       {
-        path: "/dashboard/manageShop/editNewShope",
+        path: "/dashboard/manageShop/editNewShope/:id",
         element: <EditNewShop></EditNewShop>
       },
        {

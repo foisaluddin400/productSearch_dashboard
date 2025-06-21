@@ -1,7 +1,7 @@
 import { Form, Modal, Upload, DatePicker, TimePicker, Input, message, Spin } from "antd";
 import React, { useState } from "react";
-import { PlusOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
+
+import { useAddProductMutation } from "../redux/api/productManageApi";
 
 
 const AddProduct = ({ openAddModal, setOpenAddModal }) => {
@@ -10,6 +10,7 @@ const AddProduct = ({ openAddModal, setOpenAddModal }) => {
 
   const [loading, setLoading] = useState(false);
 
+const [addProduct] = useAddProductMutation();
  
   const handleCancel = () => {
     form.resetFields();
@@ -17,9 +18,26 @@ const AddProduct = ({ openAddModal, setOpenAddModal }) => {
   };
 
   const handleSubmit = async (values) => {
-  
-  };
+    setLoading(true); 
+    const data = {
+      name: values.name,
+      price: Number(values.price),
+    };
 
+    try {
+      
+      const response = await addProduct(data).unwrap();
+      message.success(response.message);
+
+      form.resetFields(); 
+      setOpenAddModal(false); 
+    } catch (error) {
+      console.log(error);
+      message.error(error?.data?.message || "Something went wrong!");
+    } finally {
+      setLoading(false); 
+    }
+  };
   return (
     <Modal
       centered
@@ -50,12 +68,12 @@ const AddProduct = ({ openAddModal, setOpenAddModal }) => {
           {/* Upload */}
           <Form.Item
               label="Product Price"
-              name="url"
+              name="price"
               rules={[
                 { required: true, message: "Please input Product Price!" },
               ]}
             >
-              <Input placeholder="Enter Product Price" style={{ borderRadius: "0px", padding: "6px 8px" }} />
+              <Input type="number" placeholder="Enter Product Price" style={{ borderRadius: "0px", padding: "6px 8px" }} />
             </Form.Item>
 
           
@@ -64,7 +82,7 @@ const AddProduct = ({ openAddModal, setOpenAddModal }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 mt-2 bg-[#495F48] text-white rounded-md"
+            className="w-full py-2 mt-2 bg-[#212121] text-white rounded-md"
           >
             {loading ? <Spin size="small" /> : "Add"}
           </button>
