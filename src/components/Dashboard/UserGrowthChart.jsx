@@ -13,17 +13,17 @@ import { Select } from "antd";
 import { useGetUserGrowthQuery } from "../../page/redux/api/metaDataApi";
 
 const UserGrowthChart = () => {
-    const [year, setYears] = useState(2025);
+    const [year, setYears] = useState(new Date().getFullYear());
   const{data: userGrowth} = useGetUserGrowthQuery(year)
   const currentYear = new Date().getFullYear();
 
 
-   const items = [
-    { value: '2025', label: '2025' },
-    { value: '2024', label: '2024' },
-    { value: '2023', label: '2023' },
-    { value: '2022', label: '2022' }
-  ];
+const items = [
+  { value: '2025', label: '2025' },
+  { value: '2024', label: '2024' },
+  { value: '2023', label: '2023' },
+  { value: '2022', label: '2022' }
+];
 
   const handleYearChange = (value) => {
     setYears(value); 
@@ -43,6 +43,12 @@ const UserGrowthChart = () => {
     maxUsers,
   };
 }, [userGrowth]);
+
+const yearOptions = (userGrowth?.data?.yearsDropdown || []).map(year => ({
+  value: year,
+  label: `${year}`,
+}));
+
 
 
   return (
@@ -69,16 +75,12 @@ const UserGrowthChart = () => {
           📈 User Growth
         </h3>
         <Select
-  defaultValue={year}
+  value={year}
   onChange={handleYearChange}
   style={{ width: 120 }}
-  options={[
-    { value: 2025, label: '2025' },
-    { value: 2024, label: '2024' },
-    { value: 2023, label: '2023' },
-    { value: 2022, label: '2022' }
-  ]}
+  options={yearOptions}
 />
+
 
       </div>
       <ResponsiveContainer width="100%" height="85%">

@@ -242,9 +242,10 @@ const ManageShope = () => {
                                 {singleShopData?.data?.availalbeProducts?.map((item, index) => (
                                     <span
                                         key={index}
-                                        className="px-3 py-1 bg-gray-100 rounded-full text-sm border border-gray-300"
+                                        className="px-3 py-1 bg-gray-100 rounded-full text-center text-sm border border-gray-300"
                                     >
-                                        {item.name}
+                                        <h1 className='text-lg'>{item.name}</h1>
+                                        <h1>{item.price}</h1>
                                     </span>
                                 ))}
                             </div>

@@ -294,7 +294,7 @@ const ShopCreateForm = () => {
               onPreview={onPreview}
               multiple={true} // Allow multiple files
             >
-              {fileList.length < 5 && '+ Upload'}
+              {fileList.length < 1 && '+ Upload'}
             </Upload>
           </Form.Item>
         </Col>
