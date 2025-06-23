@@ -49,7 +49,7 @@ const EditNewShop = () => {
     imgWindow?.document.write(image.outerHTML);
   };
   const [shopCoordinates, setShopCoordinates] = useState([]);
-
+const [shopAddress, setShopAddress] = useState("");
   const onFinish = async (values) => {
     setLoading(true); 
     const id = singleShopData?.data?._id
@@ -71,6 +71,7 @@ const EditNewShop = () => {
           type: "Point",
           coordinates: shopCoordinates.length > 0 ? shopCoordinates : [0, 0],
         },
+        address: shopAddress,
         openDays: values.openDays,
         openingTime: values.openingTime.format("HH:mm"),
         closingTime: values.closingTime.format("HH:mm"),
@@ -100,7 +101,7 @@ const EditNewShop = () => {
   const googleMapsApiKey = import.meta.env.VITE_REACT_APP_GOOGLE_MAPS_API_KEY;
   const autocompleteRef = useRef(null);
 
-  const [shopAddress, setShopAddress] = useState("");
+  
   const onPlaceChanged = () => {
     if (autocompleteRef.current !== null) {
       const place = autocompleteRef.current.getPlace();
@@ -111,7 +112,7 @@ const EditNewShop = () => {
         const lng = location.lng();
         const address = `${lng}, ${lat}`;
 
-        setShopAddress(address);
+        setShopAddress(place?.formatted_address);
         setShopCoordinates([lng, lat]);
         form.setFieldsValue({
           shopAdress: address,
@@ -253,7 +254,7 @@ const EditNewShop = () => {
             name="openingTime"
             rules={[{ required: true, message: "Please select opening time" }]}
           >
-            <TimePicker format="HH:mm" />
+            <TimePicker className="w-full" format="HH:mm" />
           </Form.Item>
         </Col>
 
@@ -263,7 +264,7 @@ const EditNewShop = () => {
             name="closingTime"
             rules={[{ required: true, message: "Please select closing time" }]}
           >
-            <TimePicker format="HH:mm" />
+            <TimePicker className="w-full" format="HH:mm" />
           </Form.Item>
         </Col>
 

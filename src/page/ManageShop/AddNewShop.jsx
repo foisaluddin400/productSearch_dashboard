@@ -3,7 +3,6 @@ import { LoadScript, Autocomplete } from "@react-google-maps/api";
 import React, { useRef } from "react";
 
 import {
-  Button,
   Col,
   Form,
   Input,
@@ -14,7 +13,6 @@ import {
   Upload,
   message,
 } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
 import { useAddShopProductMutation, useGetProductQuery } from "../redux/api/productManageApi";
 
 const { Option } = Select;
@@ -52,7 +50,7 @@ const ShopCreateForm = () => {
   const [loading, setLoading] = useState(false);
 
   const [addShopProduct, { isLoading }] = useAddShopProductMutation();
-
+const [shopAddress, setShopAddress] = useState("");
   const onFinish = async (values) => {
     setLoading(true);
     try {
@@ -73,6 +71,7 @@ const ShopCreateForm = () => {
           type: "Point",
           coordinates: coordinates,
         },
+       address: shopAddress,
         openDays: values.openDays,
         openingTime: values.openingTime.format("HH:mm"),
         closingTime: values.closingTime.format("HH:mm"),
@@ -103,35 +102,29 @@ const ShopCreateForm = () => {
 
   };
 
-  const handleFileChange = ({ fileList }) => {
-    setFileList(fileList.slice(-1));
-  };
-
   const libraries = ["places"];
   const googleMapsApiKey = import.meta.env.VITE_REACT_APP_GOOGLE_MAPS_API_KEY;
   const autocompleteRef = useRef(null);
 
-  const [shopAddress, setShopAddress] = useState("");
+  
 
   const onPlaceChanged = () => {
     if (autocompleteRef.current !== null) {
       const place = autocompleteRef.current.getPlace();
+      console.log(place?.formatted_address)
       const location = place.geometry?.location;
-
       if (location) {
         const lat = location.lat();
         const lng = location.lng();
-        const address = `${lng}, ${lat}`;
-
-        setShopAddress(address); // Update input
+        const address = `${lng},${lat}`;
+        console.log(address, lat, lng)
+        setShopAddress(place?.formatted_address); 
         form.setFieldsValue({
-          shopAdress: address, // Update AntD Form
+          shopAdress: address, 
         });
       }
     }
   };
-
-
 
   return (
     <Form form={form} layout="vertical" onFinish={onFinish}>
@@ -157,28 +150,6 @@ const ShopCreateForm = () => {
         </Col>
 
         <Col xs={24} sm={12}>
-          {/* <Form.Item
-            label="Shop Address (lng, lat)"
-            name="shopAdress"
-            rules={[
-              {
-                required: true,
-                message: "Please enter coordinates (lng, lat)",
-              },
-            ]}
-          >
-            <LoadScript
-              googleMapsApiKey={googleMapsApiKey}
-              libraries={libraries}
-            >
-              <Autocomplete
-                onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
-                onPlaceChanged={onPlaceChanged}
-              >
-                <Input placeholder="Search shop location" />
-              </Autocomplete>
-            </LoadScript>
-          </Form.Item> */}
           <Form.Item
             label="Shop Address (lng, lat)"
             name="shopAdress"
@@ -232,7 +203,7 @@ const ShopCreateForm = () => {
             name="openingTime"
             rules={[{ required: true, message: "Please select opening time" }]}
           >
-            <TimePicker format="HH:mm" />
+            <TimePicker className="w-full" format="HH:mm" />
           </Form.Item>
         </Col>
 
@@ -242,7 +213,7 @@ const ShopCreateForm = () => {
             name="closingTime"
             rules={[{ required: true, message: "Please select closing time" }]}
           >
-            <TimePicker format="HH:mm" />
+            <TimePicker className="w-full" format="HH:mm" />
           </Form.Item>
         </Col>
 
@@ -292,7 +263,7 @@ const ShopCreateForm = () => {
               fileList={fileList}
               onChange={onChange}
               onPreview={onPreview}
-              multiple={true} // Allow multiple files
+              multiple={true} 
             >
               {fileList.length < 1 && '+ Upload'}
             </Upload>
